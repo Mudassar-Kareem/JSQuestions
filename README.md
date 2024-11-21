@@ -611,3 +611,180 @@ console.log(b); // Output: null, because we set `b` to null intentionally
 console.log(a === b); // Output: false, because `undefined` is not the same as `null`
 console.log(a == b);  // Output: true, because loosely, `undefined` and `null` are treated as equal
 ```
+
+---
+
+# Difference between Mutable and Immutable
+
+## Mutable
+
+**Mutable** means that the data can be changed after its creation. You can modify an object by changing its properties, adding new properties, or deleting existing ones. Objects, arrays and functions are mutable by default.
+
+- **Objects are mutable by default**: They are referenced by memory address, not by value. While objects are mutable, we can also work with them immutably:
+  
+```javascript
+const person = {
+   name: "P",
+   age: 18
+};
+person = {...person, age: 20};  // Creates a new object, modifies the age, but the original object is unchanged
+console.log(person);
+```
+
+If `person` is an object, the following example won't create a copy:
+```javascript
+// Create an object
+const person = {
+  firstName: "A",
+  lastName: "B",
+  age: 50,
+  eyeColor: "blue"
+}
+
+// Create a copy
+const x = person;
+
+// Change age in both
+x.age = 10;
+// The object `x` is not a copy, it's the same reference as `person`.
+// Any changes to `x` will also change `person`.
+```
+
+```javascript
+const user = {
+    name: 'Ahad Ali',
+    age: 20
+};
+user.name = 'Abdul Ahad'; 
+console.log(user);  // Modifying properties is allowed even with 'const'
+// 'const' only prevents reassignment of the reference, not the mutation of the object.
+```
+
+```javascript
+const myObj = { name: 'Ahad Ali' };
+const myArray = [0, 1, 2];
+
+const myObj2 = myObj;
+const myArray2 = myArray;
+
+myObj2.soccer = "fun";  // Modifying the original object
+myArray.push(3);  // Modifying the original array
+
+console.log(myObj);  // The original object is also modified
+console.log(myObj2);  // Same reference, so the object is the same
+console.log(myArray);  // The original array is also modified
+console.log(myArray2);  // Same reference, so the array is the same
+```
+
+- **Arrays** are mutable bydefault, meaning that the data can be modified in place. However, some methods in arrays work immutability, which means they create a new copy of the array instead of modifying the original array.
+
+- **Mutable methods** modify the original array:
+  - `push`: Adds new elements to the array.
+  - `sort`: Sorts the array in place.
+  - `splice`: Changes the contents of an array by removing or replacing elements.
+
+```javascript
+let mutableArray = [1, 2, 3];
+mutableArray.push(4);  // This will modify the array directly
+console.log(mutableArray);  // Output: [1, 2, 3, 4]
+```
+
+- **Immutable methods** create a new array and leave the original array unchanged:
+  - `map`: Creates a new array with the results of calling a provided function on every element in the array.
+  - `filter`: Creates a new array with all elements that pass the test implemented by the provided function.
+  - `slice`: Returns a shallow copy of a portion of an array into a new array.
+
+```javascript
+let originalArray = [1, 2, 3, 4, 5];
+
+// map method creates a new array without modifying the original array
+let newArray = originalArray.map(item => item * 2);
+console.log(originalArray);  // Output: [1, 2, 3, 4, 5]
+console.log(newArray);       // Output: [2, 4, 6, 8, 10]
+
+// filter method creates a new array without modifying the original array
+let filteredArray = originalArray.filter(item => item > 2);
+console.log(filteredArray);  // Output: [3, 4, 5]
+
+// slice method creates a shallow copy of the original array
+let slicedArray = originalArray.slice(1, 4);
+console.log(slicedArray);    // Output: [2, 3, 4]
+```
+
+## Immutable
+
+**Immutability** means that the data cannot be changed once it has been created. Instead of modifying an object or variable, you create a new one. This concept is especially encouraged in frameworks like **React**, **Angular**, and **Vue**.
+
+- **Primitive types** (numbers, strings and boolean) are immutable.
+
+- **Strings** are immutable. This means once a string is created, it cannot be changed. Any operation that appears to modify a string will actually create a new one, leaving the original string unchanged.
+  
+```javascript
+let immutable = "Hello";
+immutable[1] = "a";  // This will not work, because strings are immutable
+immutable = immutable + " World";  // This creates a new string, not modifying the original
+console.log(immutable);  // Output: "Hello World"
+```
+
+The original string "Hello" still exists in memory, but the variable name now refers to the new string "Hello World".
+
+```javascript
+// Immutable Object with `Object.assign()`
+const user = {
+    name: 'Ahad Ali',
+    age: 20
+};
+const newUser = Object.assign({}, user, { name: 'Abdul Ahad' });
+console.log(newUser); // Output: { name: 'Abdul Ahad', age: 20 }
+```
+
+```javascript
+// Immutable Values (Numbers and Strings)
+let myNum = 27;
+let myString = "hi how are you";
+let myNum2 = myNum; 
+let myString2 = myString; 
+myNum2 = myNum2 - 5; 
+myString2 = myString2 += ' doing'; 
+
+console.log(myNum);      // Output: 27 (unchanged)
+console.log(myNum2);     // Output: 22 (new value)
+console.log(myString);   // Output: "hi how are you" (unchanged)
+console.log(myString2);  // Output: "hi how are you doing" (new value)
+```
+
+As JS strings are immutable, all string methods produce a new string without altering the original string.
+- `String.length()`
+- `String.charAt()`
+- `String.charCodeAt()`
+- `String.at()`
+- `String[]`
+- `String.slice()`
+- `String.substring()`
+- `String.substr()`
+- `String.toUpperCase()`
+- `String.toLowerCase()`
+- `String.concat()`
+- `String.trim()`
+- `String.trimStart()`
+- `String.trimEnd()`
+- `String.padStart()`
+- `String.padEnd()`
+- `String.repeat()`
+- `String.replace()`
+- `String.replaceAll()`
+- `String.split()`
+
+---
+
+# When to Use Mutable and Immutable?
+
+### Mutable:
+- Easier to modify existing code, helps save memory (memory efficient).
+- Can lead to bugs if not written correctly, and it can be difficult to debug.
+
+### Immutable:
+- Helps in easy debugging, ensures no state corruption, and maintains data integrity.
+- It is more memory intensive and can have worse performance.
+
+**[More About Mutability and Immutability](https://youtu.be/DBZESPS-5mQ?si=rt1E3T_fowLEoNp4)**
