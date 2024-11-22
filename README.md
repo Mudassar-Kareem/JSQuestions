@@ -788,3 +788,202 @@ As JS strings are immutable, all string methods produce a new string without alt
 - It is more memory intensive and can have worse performance.
 
 **[More About Mutability and Immutability](https://youtu.be/DBZESPS-5mQ?si=rt1E3T_fowLEoNp4)**
+
+--- 
+
+# Difference Between Synchronous and Asynchronous Programming
+
+### Sync or Synchronous
+- Code executes line by line in a sequential manner.
+- Each operation waits for the previous one to complete before moving forward.
+- Execution starts at the top and proceeds step-by-step to the bottom.
+- Processing is done in a specific order, ensuring tasks are completed one by one.
+- Suitable for simple tasks where timing is not critical.
+- Commonly used for scenarios like reading files or performing calculations that do not involve waiting for external resources.
+- Blocks the execution flow, requiring tasks to complete before moving to the next.
+
+1. If two people are using an ATM, the second person must wait until the first person finishes their transaction.
+2. You cannot start the next step in a process until the current step is completed.
+
+```javascript
+console.log('1');
+console.log('2');
+```
+
+### Async or Asynchronous Programming
+- Allows multiple operations to be performed concurrently without blocking execution.
+- Enables non-blocking execution, improving efficiency in handling time-intensive tasks.
+- Tasks can run independently, and the program does not wait for one task to complete before starting another.
+- Ideal for I/O operations, network requests, or fetching data from external sources.
+- Handled with **Promises**, **Callbacks**, or **Async/Await** mechanisms in JavaScript.
+
+1. If four people are preparing dishes in a kitchen, each person can work on their dish simultaneously without waiting for others to finish.
+2. When fetching data from a server, the application can continue running while waiting for the data to arrive.
+
+```javascript
+console.log('1');
+setTimeout(() => {
+    console.log('2');
+}, 5000);
+console.log('3');
+```
+```javascript
+function fun1(callback) {
+    setTimeout(() => {
+        console.log('1');
+        callback();
+    }, 3000);
+}
+
+function fun2() {
+    console.log('2');
+    console.log('3');
+}
+
+fun1(fun2);
+```
+
+---
+
+# Difference b/w Blocking and Non-blocking Operations
+
+## Blocking
+- Refers to code that blocks further execution until the operation completes.
+- Example: **Node.js `readFileSync()`**
+
+## Non-blocking
+- Refers to code that does not block further execution.
+- Example: **Node.js `readFile()`**
+  
+![image](https://github.com/user-attachments/assets/b340369b-8873-42f7-936e-74b7cd3d06df)
+
+---
+
+When we run JavaScript code in a JS engine, the engine uses the **Call Stack** to execute the code. The Call Stack waits for nothing.
+
+1. **Yellow Block (Call Stack)**: Where all code execution happens.
+2. **Web APIs**: External features provided by the browser (e.g., timers, fetch) to perform asynchronous tasks. These are not part of JavaScript itself.
+3. **Task Queue**: Tracks tasks from Web APIs (e.g., `setTimeout`) in a First-In-First-Out (FIFO) order.
+4. **Multitask Queue/Promise Jobs**: High-priority queue used for Promises and `async/await`. Executes before the Task Queue.
+5. **Event Loop**: Monitors Task Queue and Multitask Queue, moving tasks to the Call Stack for execution when the stack is empty.
+
+![image](https://github.com/user-attachments/assets/af7d4ce6-7975-4c2a-b5ef-5dcfe0780de8)
+![image](https://github.com/user-attachments/assets/6712618a-78ba-4105-a859-529a5146c6e1)
+
+#### Task Queue
+- Holds asynchronous tasks from Web APIs.
+- Follows FIFO order.
+- Used by timers (`setTimeout`, `setInterval`) for execution.
+
+#### Multitask Queue / Promise Jobs
+- Similar to Task Queue but with higher priority.
+- Used for Promises and `async/await`.
+- Executes tasks before the Task Queue.
+
+#### Event Loop
+- Moves tasks from the Multitask Queue and Task Queue to the Call Stack when the stack is empty.
+- Prioritizes Multitask Queue over Task Queue.
+- Ensures smooth handling of asynchronous code.
+
+**[More About Event Loop](https://towardsdev.com/event-loop-in-javascript-672c07618dc9)**
+
+**Everything happens in the Call Stack:** 
+   - The Call Stack executes code and does not wait for anything.
+**Asynchronous Operations and Web APIs:** 
+   - Features like `setTimeout`, `fetch`, Promises, and `async/await` are not part of JavaScript itself but are provided by **Web APIs** in browsers.
+**Timers in Web APIs:** 
+   - Web APIs handle timers and, when they expire, tasks are moved to either the **Task Queue** or **Multitask Queue**.
+**Queues and Priorities:**
+   - **Multitask Queue** (e.g., Promises) has the highest priority.
+   - **Task Queue** (e.g., `setTimeout`) has lower priority.
+   - Both queues follow the **FIFO** principle, meaning the first task in is the first to be executed.
+**Event Loop:** 
+   - The Event Loop moves tasks from the queues (Task Queue or Multitask Queue) to the Call Stack when it becomes empty.
+
+```javascript
+console.log('1');
+setTimeout(() => {
+  console.log('2');
+}, 5000);
+console.log('3');
+```
+- Logs `1` to the console.  
+- `setTimeout` is called, and the browser's Web API starts a 5-second timer.  
+- Logs `3` immediately, as the Call Stack processes synchronous code first.  
+- After 5 seconds, the timer expires, and the callback (`console.log('2')`) is placed in the Task Queue.  
+- The Event Loop checks if the Call Stack is empty and moves the callback from the Task Queue to the Call Stack, where `2` is logged.  
+
+```javascript
+console.log('1');
+setTimeout(() => {
+  console.log('2');
+}, 0);
+console.log('3');
+```
+### Why does setting the timer to 0 still log `2` last?
+- Logs `1` to the console.  
+- Calls `setTimeout`, and a timer with 0ms delay is set in the Web API.  
+- Logs `3` next, as the Call Stack processes synchronous code first.  
+- The timer expires instantly but places the callback (`console.log('2')`) in the Task Queue.  
+- The Event Loop checks the Call Stack. Since it's not empty (processing `3`), it waits until the stack is clear before moving the task from the Task Queue.  
+- Once the stack is empty, the Event Loop moves the task to the Call Stack, logging `2`.
+
+
+```javascript
+console.log('Global 1!');
+setTimeout(() => {
+  console.log('Task Queue!');
+}, 0);
+Promise.resolve().then(() => {
+  console.log("Microtask Queue!");
+});
+console.log('Global 2!');
+```
+- Logs `Global 1!` to the console.  
+- Calls `setTimeout`, moving the task to the Task Queue with a 0ms delay.  
+- Calls `Promise.resolve()`, which places the `.then()` task in the Multitask Queue (also called Microtask Queue).  
+- Logs `Global 2!` next, as synchronous code in the Call Stack is executed first.  
+- The Event Loop processes the Multitask Queue (higher priority):  
+  - Logs `Microtask Queue!`.  
+- The Task Queue is processed next:  
+  - Logs `Task Queue!`.  
+
+**Visualization Tool:** [Click Here](https://www.jsv9000.app)
+
+---
+
+## What is Starvation and When Does It Occur?
+
+**Starvation** occurs when a particular type of task continuously monopolizes the execution thread, preventing other tasks from running or causing delays. This typically happens in the JavaScript environment when tasks in the **Microtask Queue** keep getting added at a high rate, leaving no opportunity for tasks in the **Task Queue** (Callback Queue) to execute.
+
+**Microtasks** have higher priority than tasks in the Task Queue are "starved" because they never get a chance to run.
+  - If microtasks are added in rapid succession, the Event Loop prioritizes them, repeatedly processing the Microtask Queue and ignoring tasks in the Task Queue.
+
+
+```javascript
+console.log('Global 1!');
+setTimeout(() => {
+  console.log('Task Queue!');
+}, 0);
+Promise.resolve().then(() => {
+  console.log('Microtask Queue!');
+  Promise.resolve().then(() => {
+    console.log('Microtask Queue!');
+    Promise.resolve().then(() => {
+      console.log('Microtask Queue!');
+      Promise.resolve().then(() => {
+        console.log('Microtask Queue!');
+      });
+    });
+  });
+});
+console.log('Global 2!');
+```
+- Logs `Global 1!`.
+- `setTimeout` moves the callback (`console.log('Task Queue!')`) to the Task Queue with a 0ms delay.
+- `Promise.resolve()` adds the `.then()` callback to the Microtask Queue.
+- Logs `Global 2!` (synchronous code in the Call Stack is executed first).
+- The Event Loop processes the Microtask Queue:
+  - Logs `Microtask Queue!` four times, as new microtasks are continually added within each `.then()`.
+- After all microtasks are completed, the Event Loop processes the Task Queue:
+  - Logs `Task Queue!`.
