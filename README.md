@@ -857,11 +857,231 @@ console.log('Global 2!');
 
 24. #### What are arrow functions vs normal functions
 
+1. Syntax 
+```javascript
+// Normal Function
+function add(a, b) {
+    return a + b;
+}
+```
+
+```javascript
+// Arrow Function
+const add = (a, b) => a + b;
+
+a => {
+    return a; // Explicit Return, Multi-Line
+};
+
+a => a; // Implicit Return, Single-Line
+
+a => (
+    a // Implicit Return, Multi-Line
+);
+
+(a, b) => a + b; // Multiple Parameters (Parentheses Required)
+```
+
+2. Return Behavior
+- **Normal Functions**: Always require the `return` keyword to return a value.
+- **Arrow Functions**: Allow implicit returns where the `return` keyword can be omitted for single-line expressions.
+
+```javascript
+// Normal Function
+function multiply(a, b) {
+    return a * b; // Explicit Return
+}
+
+// Arrow Function
+const multiply = (a, b) => a * b; // Implicit Return
+```
+
+3. Arguments Object
+- **Normal Functions**: Have access to the `arguments` object, which contains the arguments passed to the function.
+- **Arrow Functions**: Do not have their own `arguments` object.
+
+```javascript
+// Normal Function
+function printArguments() {
+    console.log(arguments);
+}
+printArguments(1, 2, 3); // Output: [1, 2, 3]
+
+// Arrow Function
+const printArguments = () => {
+    console.log(arguments); 
+};
+printArguments(1, 2, 3); // Error: 'arguments' is not defined
+```
+
+4. `this` Binding
+- **Normal Functions**: Create their own `this` context, which depends on how the function is called.
+- **Arrow Functions**: Do not create their own `this` context; they inherit `this` from the surrounding scope.
+
+```javascript
+// Normal Function
+const obj1 = {
+    name: 'Normal Function',
+    print: function() {
+        console.log(this);
+    }
+};
+obj1.print(); // Logs the obj1 object
+
+// Arrow Function
+const obj2 = {
+    name: 'Arrow Function',
+    print: () => {
+        console.log(this);
+    }
+};
+obj2.print(); // Logs the global 'window' object (or 'undefined' in strict mode)
+```
+
+5. Constructors
+- **Normal Functions**: Can be used as constructors with the `new` keyword.
+- **Arrow Functions**: Cannot be used as constructors and will throw an error if used with `new`.
+
+```javascript
+// Normal Function as Constructor
+function Person(name) {
+    this.name = name;
+}
+const person1 = new Person('John'); // Works
+
+// Arrow Function as Constructor
+const Person = (name) => {
+    this.name = name;
+};
+const person2 = new Person('John'); // Error: Person is not a constructor
+```
+
+6. Hoisting
+- **Normal Functions**: Can be declared and are hoisted to the top of their scope.
+- **Arrow Functions**: Cannot be accessed before initialization.
+
+```javascript
+// Normal Function
+console.log(add(2, 3)); // Works
+function add(a, b) {
+    return a + b;
+}
+
+// Arrow Function
+console.log(subtract(5, 2)); // Error: Cannot access 'subtract' before initialization
+const subtract = (a, b) => a - b;
+```
+
+7. Declaration
+- **Normal Functions**: Can be declared using the `function` keyword.
+- **Arrow Functions**: Must always be assigned to a variable or constant.
+
+```javascript
+// Normal Function Declaration
+function greet() {
+    console.log('Hello!');
+}
+
+// Arrow Function Assignment
+const greet = () => {
+    console.log('Hello!');
+};
+```
+
+| **Feature**         | **Normal Function**               | **Arrow Function**                 |
+|---------------------|-----------------------------------|------------------------------------|
+| **Syntax**          | `function add(a, b) { ... }`     | `const add = (a, b) => { ... }`    |
+| **Return**          | Explicit Return Required         | Allows Implicit Return             |
+| **arguments Object**| Available                        | Not Available                      |
+| **this Binding**    | Creates Own `this`               | Inherits `this`                    |
+| **Constructor**     | Can Be Used                      | Cannot Be Used                     |
+| **Hoisting**        | Fully Hoisted                    | Not Hoisted                        |
+| **Declaration**     | Using function keyword           | Must Be Assigned to Variable       |
+
+
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
 
 25. #### This keyword
+
+The `this` keyword refers to the object it belongs to.
+Its value changes depending on where and how it is used in JavaScript.
+
+1. In a Method
+- When `this` is used in a method, it refers to the object that owns the method.
+
+```javascript
+const obj = {
+  name: 'deeecode',
+  age: 200,
+  print: function() {
+    console.log(this);
+  }
+};
+obj.print(); // Logs the object: { name: 'deeecode', age: 200, print: [Function: print] }
+```
+
+2. Alone
+- When `this` is used alone (outside of any method), it refers to the global object.
+
+```javascript
+console.log(this); // In a browser, it logs the `window` object.
+```
+
+3. In a Function
+- In a regular function, `this` refers to the global object (i.e., `window` in browsers) unless the function is in strict mode.
+
+```javascript
+function showThis() {
+  console.log(this);
+}
+showThis(); // Logs the global object (window in browsers).
+```
+
+4. In an Event
+- In an event handler, `this` refers to the element that received the event.
+
+```html
+<button id="myButton">Click Me</button>
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+  console.log(this); // Logs the button element that was clicked.
+});
+</script>
+```
+
+5. Using `call()`, `apply()`, and `bind()`
+- Methods like `call()`, `apply()`, and `bind()` allow you to explicitly set the value of `this` inside a function, binding it to any object.
+
+- **`call()`**: Calls a function with a specified `this` value and arguments.
+- **`apply()`**: Similar to `call()`, but takes arguments as an array.
+- **`bind()`**: Returns a new function, permanently binding `this` to a specified object.
+
+```javascript
+const obj = {
+  name: 'deeecode',
+  age: 200,
+  print: function() {
+    console.log(this);
+  }
+};
+
+const obj2 = {
+  name: 'decoded',
+  age: 300,
+};
+
+// Using call() - explicitly sets `this` to obj
+obj.print.call(obj); // Logs obj
+
+// Using apply() - explicitly sets `this` to obj2
+obj.print.apply(obj2); // Logs obj2
+
+// Using bind() - permanently sets `this` to obj2 and returns a new function
+const boundPrint = obj.print.bind(obj2);
+boundPrint(); // Logs obj2
+```
 
 **[⬆ Back to Top](#table-of-contents)**
 
@@ -869,11 +1089,129 @@ console.log('Global 2!');
 
 26. #### Rest vs Spread Operator
 
+Rest Operator (`...`)
+
+The **Rest Operator** is used to collect multiple arguments into a single array or object. It's commonly used in function parameters or object destructuring to gather remaining values.
+
+1. Rest Operator Used in Function Parameter
+```javascript
+function print(...rest) {
+    return rest; // Collects all arguments into an array.
+}
+console.log(print(1, 2, 3)); // Output: [1, 2, 3]
+// Collects all function arguments into the rest array.
+```
+
+2. Rest operator used in object destructuring
+```javascript
+const [...rest] = [1, 2, 3]; // Collects all elements into an array.
+console.log(rest); // Output: [1, 2, 3]
+// The rest operator collects the entire array into the rest variable.
+```
+
+3. Rest Parameter for Operations
+```javascript
+function sum(...args) {
+    return args.reduce((a, b) => a + b); // // Adds all numbers passed to the function
+}
+console.log(sum(1, 2, 3, 4)); // Output: 10
+```
+
+Spread Operator (`...`)
+
+The **Spread Operator** is used to expand arrays or objects into individual elements. It helps in combining arrays, copying values, or passing array elements to functions.
+
+1. Spread Operator in Arrays to combine arrays
+```javascript
+const arr = [1, 2, 3];
+const newArr = [...arr, 4, 5]; // // Expands arr and adds new elements
+console.log(newArr); // Output: [1, 2, 3, 4, 5]
+```
+
+2. Spread operator to combine two arrays
+```javascript
+const arr1 = [1, 2, 3];
+const arr2 = [4, 5, 6];
+const combined = [...arr1, ...arr2];
+console.log(combined); // Output: [1, 2, 3, 4, 5, 6]
+```
+
+**Destructuring in JavaScript**
+Destructuring is a JavaScript expression that enables you to unpack values from arrays or properties from objects into distinct variables.
+
+```javascript
+// Destructuring an Array
+const arr = [1, 2, 3];
+const [a, b, c] = arr; // Unpacks array into separate variables
+console.log(a); // Output: 1
+console.log(b); // Output: 2
+console.log(c); // Output: 3
+```
+```javascript
+// Destructuring an Array with Rest
+const [first, second, ...rest] = [1, 2, 3, 4, 5];
+console.log(first);  // Output: 1
+console.log(second); // Output: 2
+console.log(rest);   // Output: [3, 4, 5]
+```
+```javascript
+// Destructuring an Object with Rest
+const user = { name: 'John', age: 30, role: 'admin' };
+const { name, ...details } = user; // Unpacks the 'name' and collects remaining properties in 'details'
+console.log(name);    // Output: 'John'
+console.log(details); // Output: { age: 30, role: 'admin' }
+```
+
+
+| **Rest**                               | **Spread**                                      |
+|----------------------------------------|-------------------------------------------------|
+| Gathers values into one array.        | Breaks values apart into individual elements.   |
+
+
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
 
 27. #### Deep copy vs shallow copy
+
+Shallow Copy
+
+A **shallow copy** copies only the outermost layer of an object or array. If the original object or array contains nested objects or arrays, the shallow copy will still reference them, not duplicate them. This means that changes made to nested objects in the copied object will affect the original object.
+
+```javascript
+const original = { name: "Alice", details: { age: 25, city: "New York" } };
+
+// Shallow copy using spread operator
+const shallowCopy = { ...original };
+
+shallowCopy.name = "Ahsan";
+shallowCopy.details.age = 30;
+
+console.log(original.details.age);  // Output: 30
+console.log(shallowCopy.details.age); // Output: 30
+```
+
+Deep Copy
+
+A **deep copy** creates a completely new object, including all nested objects or arrays, so changes to the copied object won't affect the original one.
+
+```javascript
+const original = { name: "Alice", details: { age: 25, city: "New York" } };
+
+// Deep copy using JSON methods
+const deepCopy = JSON.parse(JSON.stringify(original));
+
+deepCopy.name = "Ahsan";
+deepCopy.details.age = 30;
+
+console.log(original.details.age);  // Output: 25
+console.log(deepCopy.details.age);   // Output: 30
+```
+
+| **Shallow Copy**                                                                                                    | **Deep Copy**                                                                                                       |
+|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| Copies the array or object, but any nested objects or arrays inside the copied structure are still referenced to the original. | Copies the entire structure, including nested objects or arrays, creating independent copies.                        |
+| Changes to the nested data will reflect in both the original and the copied structures.                            | Changes to the nested data won't affect the original.                                                                |
 
 **[⬆ Back to Top](#table-of-contents)**
 
@@ -881,11 +1219,122 @@ console.log('Global 2!');
 
 28. #### forEach, Map, Filter, Reduce Methods 
 
+1. `forEach()`
+The `forEach()` method is used to loop over an array and perform an action on each item. It doesn't return anything; it just performs the given function for each element.
+
+```javascript
+const numbers = [1, 2, 3, 4];
+numbers.forEach(num => {
+    console.log(num * 2); // Multiplies each number by 2 and prints it
+});
+```
+
+2. `map()`
+The `map()` method creates a new array by applying a function to each element in the original array. It returns a new array without changing the original one.
+
+```javascript
+const numbers = [1, 2, 3, 4];
+const doubled = numbers.map(num => num * 2);
+console.log(doubled);  // Output: [2, 4, 6, 8]
+console.log(numbers);  // Output: [1, 2, 3, 4]
+```
+
+3. `filter()`
+The `filter()` method creates a new array containing only the elements that pass a test specified by a function. It helps in filtering out certain values.
+
+```javascript
+const numbers = [1, 2, 3, 4, 5, 6];
+const evenNumbers = numbers.filter(num => num % 2 === 0);
+console.log(evenNumbers);  // Output: [2, 4, 6]
+```
+
+4. `reduce()`
+The `reduce()` method is used to reduce an array to a single value by applying a function to each element. You can use it to sum values, concatenate strings, or perform other calculations.
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((acc, num) => acc + num, 0);
+console.log(sum);  // Output: 15
+```
+
+## Array Methods and Copy Behavior
+
+| **forEach()**                                        | **map()**                                               | **filter()**                                           | **reduce()**                                          |
+|------------------------------------------------------|---------------------------------------------------------|-------------------------------------------------------|------------------------------------------------------|
+| Loops through each element and performs an action. | Creates a new array by transforming each element.     | fCreates a new array containing elements that pass a test. | Reduces an array to a single value.                |
+| Modifies the original array if changes are made.   | Does not modify the original array.                   | Does not modify the original array.                 | Can accumulate complex data like objects.          |
+| **Shallow Copy**: No new array created. Modifies the original array directly. | **Shallow Copy**: Creates a new array, but nested objects are still references to the original. | **Shallow Copy**: Creates a new array, but nested objects are still references to the original. | **Shallow Copy**: Accumulates values, but nested objects may still be referenced. |
+
+
+
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
 
 29. #### Objects (call, bind, apply) Methods
+
+1. `call()` Method
+The `call()` method is used to invoke a function and explicitly set the `this` context (i.e., the value of `this` inside the function). It immediately invokes the function with the specified `this` value and any arguments provided.
+
+```javascript
+const person = {
+  firstName: "John",
+  lastName: "Doe",
+  fullName: function() {
+    return this.firstName + " " + this.lastName;
+  }
+};
+
+const anotherPerson = {
+  firstName: "Jane",
+  lastName: "Smith"
+};
+
+console.log(person.fullName.call(anotherPerson)); // Output: Jane Smith
+```
+
+2. `apply()` Method
+The `apply()` method is similar to `call()`, but instead of passing arguments individually, it accepts an array of arguments. This is useful when you don't know how many arguments will be passed.
+
+```javascript
+const person = {
+  firstName: "John",
+  lastName: "Doe",
+  fullName: function(city, country) {
+    return this.firstName + " " + this.lastName + " from " + city + ", " + country;
+  }
+};
+
+const anotherPerson = {
+  firstName: "Jane",
+  lastName: "Smith"
+};
+
+console.log(person.fullName.apply(anotherPerson, ["New York", "USA"])); // Output: Jane Smith from New York, USA
+```
+
+3. `bind()` Method
+The `bind()` method creates a new function that, when invoked, has its `this` keyword set to a specific value, and it can also prepend any arguments to that function. Unlike `call()` and `apply()`, `bind()` does not invoke the function immediately; it returns a new function that can be invoked later.
+
+```javascript
+const person = {
+  firstName: "John",
+  lastName: "Doe",
+  fullName: function(city, country) {
+    return this.firstName + " " + this.lastName + " from " + city + ", " + country;
+  }
+};
+const anotherPerson = {
+  firstName: "Jane",
+  lastName: "Smith"
+};
+const boundFunction = person.fullName.bind(anotherPerson, "Paris", "France");
+console.log(boundFunction()); // Output: Jane Smith from Paris, France
+```
+
+| call                               | apply                                    | bind                                               |
+|------------------------------------|------------------------------------------|----------------------------------------------------|
+| Runs the function right away with the given arguments. | Runs the function right away but takes arguments as an array. | Creates a new function that runs later with the given `this` value and optional arguments. |
 
 **[⬆ Back to Top](#table-of-contents)**
 
