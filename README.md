@@ -275,6 +275,26 @@ function outerFunction() {
 outerFunction();
 ```
 
+Lexical scope means that a variable's scope is determined by where it is defined, not where it is called.
+```javascript
+let globalVar = "I'm a global variable";
+
+function outerFunction() {
+    let outerVar = "I'm an outer function variable";
+
+    function innerFunction() {
+        let innerVar = "I'm an inner function variable";
+        console.log(innerVar);    // Accesses its own scope
+        console.log(outerVar);    // Accesses the outer function's scope
+        console.log(globalVar);   // Accesses the global scope
+    }
+
+    innerFunction();  // Calling the inner function
+}
+
+outerFunction();  // Calling the outer function
+```
+
 3. Lexical Environment
 A **lexical environment** is an internal structure used by JavaScript to track variables and functions in a particular scope. Each lexical environment consists of two main components:
 
@@ -1677,11 +1697,133 @@ Cache-Control: no-cache
 
 35. Function Expression and Anonymous Function
 
+1. Function Expression
+A **Function Expression** is when you define a function and store it in a variable. You can use the variable to call the function later.
+- The function expression can be:
+ - **Anonymous** (no name).
+ - **Named** (optional name).
+- It’s **not hoisted**, so you cannot use it before defining it.
+
+```javascript
+// Function stored in a variable
+let add = function(a, b) {
+    return a + b;
+};
+console.log(add(10, 20)); // Output: 30
+
+// Function with a name stored in a variable
+const multiply = function multiplyNumbers(a, b) {
+    return a * b;
+};
+console.log(multiply(10, 20)); // Output: 200
+```
+
+2. Anonymous Function
+An **Anonymous Function** is a function without a name. It’s commonly used for one-time tasks, like in event handlers or `setTimeout`.
+- Typically used when you don’t need to reuse the function elsewhere.
+
+```javascript
+setTimeout(function() {
+    console.log("Hello, I am an Anonymous Function!");
+}, 1000);
+```
+
+3. Function Declaration
+A **Function Declaration** is the traditional way to define reusable functions in JavaScript.
+- Starts with the function keyword.
+- Always has a name.
+- Hoisted: You can call the function even before it’s defined in the code.
+
+```javascript
+function addNumbers(a, b) {
+    return a + b;
+}
+console.log(addNumbers(5, 15)); // Output: 20
+```
+
+
+| Feature         | Function Expression | Anonymous Function | Function Declaration |
+|------------------|---------------------|--------------------|-----------------------|
+| **Name**        | Optional            | Not present        | Always present        |
+| **Hoisting**    | No                  | No                 | Yes                   |
+| **Reusability** | Yes                 | No                 | Yes                   |
+
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
 
 36. First Class Function
+
+In JavaScript, functions are treated like values. You can:
+- Store them in variables.
+- Pass them as arguments to other functions.
+- Return them from other functions.
+- Store them in objects and arrays.
+
+This concept is called **First-Class Functions**.
+
+1. Store a Function in a Variable
+You can define a function and save it in a variable.
+
+```javascript
+let add = function(a, b) {
+    return a + b;
+};
+console.log(add(10, 20)); // Output: 30
+```
+
+2. Pass a Function as an Argument
+Functions can be passed as arguments to other functions. This allows for dynamic behavior based on the function passed.
+
+```javascript
+function sayHello() {
+    return "Hello, ";
+}
+function executeFunction(callback) {
+    return callback() + "World";
+}
+console.log(executeFunction(sayHello)); // Output: Hello, World
+```
+
+3. Return a Function from Another Function
+Functions can generate and return other functions, allowing for closures and reusable logic.
+
+```javascript
+function outerFunction() {
+    function innerFunction() {
+        return "Hello, World";
+    }
+    return innerFunction;
+}
+let inner = outerFunction();
+console.log(inner()); // Output: Hello, World
+```
+
+4. Store Functions in Arrays and Objects
+Functions can be stored as elements in arrays or as properties in objects. This makes it easy to organize and execute specific tasks.
+
+```javascript
+const operations = [
+    function(a, b) { return a + b; },  // Addition
+    function(a, b) { return a * b; }   // Multiplication
+];
+
+console.log(operations[0](2, 3)); // Output: 5
+console.log(operations[1](2, 3)); // Output: 6
+```
+```javascript
+const calculator = {
+    add: function(a, b) {
+        return a + b;
+    },
+    subtract: function(a, b) {
+        return a - b;
+    }
+};
+
+console.log(calculator.add(3, 2));    // Output: 5
+console.log(calculator.subtract(3, 2)); // Output: 1
+```
 
 **[⬆ Back to Top](#table-of-contents)**
 
@@ -1689,11 +1831,42 @@ Cache-Control: no-cache
 
 37. #### Params vs Arguments
 
+- **Parameters**: These are placeholders in the function definition.
+- **Arguments**: These are the actual values passed to the function.
+
+```javascript
+function add(a, b) {  // Parameters (a, b)
+    return a + b;
+}
+
+console.log(add(5, 3)); // Arguments (5, 3)
+```
+
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
 
 38. #### What is NaN
+
+NaN stands for "Not-a-Number". It is a special value in JavaScript that represents the result of an operation that cannot produce a valid numeric result.
+
+```javascript
+function divide(a, b) {
+    if (b === 0) {
+        return NaN;  // Division by zero is undefined in some contexts
+    }
+    return a / b;
+}
+
+console.log(divide(10, 2));  // Output: 5
+console.log(divide(10, 0));  // Output: NaN
+```
+
+##### Checking NaN:
+```javascript
+console.log(typeof(NaN));  // Output: number
+console.log(Number.isNaN('abc'));  // Output: false ('abc' is not converted to a number)
+```
 
 **[⬆ Back to Top](#table-of-contents)**
 
@@ -1701,12 +1874,88 @@ Cache-Control: no-cache
 
 40. #### Is JavaScript a Compiled or Interpreted Language
 
+JavaScript is an **interpreted** language, not a compiled language. The key difference between compiled and interpreted languages is:
+
+- **Compiled languages** are first converted into machine code and then executed.
+- **Interpreted languages** are executed line by line.
+
+Since JavaScript is interpreted, it executes instructions sequentially, one line at a time.
+
+```javascript
+console.log("Hello World"); // This will be executed first.
+console.log("Hello World"); // This will be executed after the first line.
+```
+
+**Modern JavaScript Execution:**
+
+In modern browsers, JavaScript uses **Just-In-Time (JIT) compilation**. This means the browser compiles JavaScript code into executable bytecode right before it runs, improving performance.
+
+- **Interpreted**: Like reading a book aloud, one word at a time.
+- **Compiled**: Like translating the whole book into another language before reading.
+- **JIT Compilation**: A mix! Reading aloud, but translating and memorizing important parts for faster reading next time.
+
+
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
 
 40. #### Delete Operator
 
+The `delete` operator in JavaScript is used to remove properties from objects or elements from arrays. However, it cannot delete variables declared with `var`, `let`, or `const`.
+
+1. Deleting Object Properties
+You can use the `delete` operator to remove properties from an object.
+
+```javascript
+const person = {
+    name: "Alice",
+    age: 25
+};
+
+delete person.age;  // Removes the 'age' property
+console.log(person);  // Output: { name: "Alice" }
+```
+
+2. Deleting Array Elements
+The `delete` operator can be used to remove elements from an array by index, but it leaves an `undefined` hole in the array.
+
+```javascript
+const numbers = [1, 2, 3, 4];
+delete numbers[2];  // Removes the element at index 2
+console.log(numbers);  // Output: [1, 2, undefined, 4]
+console.log(numbers.length);  // Output: 4
+```
+
+3. Using `splice()` for Array Modifications
+To remove an element from an array without leaving a hole, use the `splice()` method.
+
+```javascript
+const numbers = [1, 2, 3, 4];
+numbers.splice(3, 1);  // Removes 1 element at index 3
+console.log(numbers);  // Output: [1, 2, 3]
+console.log(numbers.length);  // Output: 3
+```
+
+4. Deleting Variables
+The `delete` operator cannot be used to delete variables declared with `var`, `let`, or `const`.
+
+
+```javascript
+var x = 10;
+delete x; 
+console.log(x); // Output: 10
+
+const myVar = 10;
+console.log(myVar); // Output: 10
+delete myVar; // Cannot delete a constant variable
+console.log(myVar);  // Output: 10
+```
+
+| **Feature**                                  | **Explanation**                                                                                                                                 |
+|----------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Delete Operator**                          | Used to remove properties from objects and elements from arrays.                                                                                 |
+| **Cannot Delete Variables**                  | Cannot delete variables declared with `var`, `let`, or `const`.                                                                                 |
+| **Array Modification**                       | Using `delete` on arrays leaves holes (undefined values), so it is recommended to use `splice()` for cleaner removal.                           |
 
 **[⬆ Back to Top](#table-of-contents)**
 
@@ -1778,3 +2027,4 @@ console.log(obj2.value); // 20 (both obj1 and obj2 reference the same object) + 
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
+
