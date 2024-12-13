@@ -44,7 +44,6 @@
 | 39 | [Is JavaScript a Compiled or Interpreted Language](#is-javascript-a-compiled-or-interpreted-language) |
 | 40 | [Delete Operator](#delete-operator) |
 | 41 | [Memory Management in JS (Heap vs Stack)](#memory-management-in-js-heap-vs-stack) |
-
 ---
 
 1. ### What is JavaScript?
@@ -1874,26 +1873,40 @@ console.log(Number.isNaN('abc'));  // Output: false ('abc' is not converted to a
 
 40. #### Is JavaScript a Compiled or Interpreted Language
 
-JavaScript is an **interpreted** language, not a compiled language. The key difference between compiled and interpreted languages is:
+##### What is a JavaScript Engine?  
+A JavaScript Engine is a program that runs JavaScript code. Modern browsers each use their own engine, such as:  
+- **V8** for Chrome and Node.js.  
+- **SpiderMonkey** for Firefox.  
 
-- **Compiled languages** are first converted into machine code and then executed.
-- **Interpreted languages** are executed line by line.
+Older engines simply interpreted code line by line, but modern engines use **Just-In-Time (JIT) Compilation** to optimize performance.  
 
-Since JavaScript is interpreted, it executes instructions sequentially, one line at a time.
+##### What is an Abstract Syntax Tree (AST)?  
+An Abstract Syntax Tree (AST) is a simplified representation of your code in the form of a tree.  
+- Each "node" in the tree represents part of your code (like a variable or function).  
+- It doesn’t include brackets or formatting details — just the structure.  
+- Many programming languages use ASTs to analyze and process code.  
+  
+##### Differences Between Compiled and Interpreted Languages:  
+- **Compiled languages** (e.g., C++):  
+  - Code is converted into machine code (binary) before running.  
+  - Slow to prepare but fast to execute.  
+- **Interpreted languages** (e.g., JavaScript):  
+  - Code runs directly, line by line.  
+  - Quick to start but slower overall.  
+
+##### How Modern JavaScript Works  
+Modern browsers use **Just-In-Time (JIT) Compilation**, which combines the benefits of both compiled and interpreted languages:  
+- It interprets code line by line.  
+- At the same time, it compiles and optimizes the code while running for better performance.  
+ 
+- **Interpreted**: Reading a book out loud, word by word.  
+- **Compiled**: Translating the entire book into another language before reading.  
+- **JIT Compilation**: Reading the book out loud while translating key sections for faster reading later.  
 
 ```javascript
-console.log("Hello World"); // This will be executed first.
-console.log("Hello World"); // This will be executed after the first line.
+console.log("Hello World"); // Runs this line first.
+console.log("Hello Again"); // Runs this line next.
 ```
-
-**Modern JavaScript Execution:**
-
-In modern browsers, JavaScript uses **Just-In-Time (JIT) compilation**. This means the browser compiles JavaScript code into executable bytecode right before it runs, improving performance.
-
-- **Interpreted**: Like reading a book aloud, one word at a time.
-- **Compiled**: Like translating the whole book into another language before reading.
-- **JIT Compilation**: A mix! Reading aloud, but translating and memorizing important parts for faster reading next time.
-
 
 **[⬆ Back to Top](#table-of-contents)**
 
@@ -2027,4 +2040,3 @@ console.log(obj2.value); // 20 (both obj1 and obj2 reference the same object) + 
 **[⬆ Back to Top](#table-of-contents)**
 
 ---
-
