@@ -44,6 +44,8 @@
 | 39 | [Is JavaScript a Compiled or Interpreted Language](#is-javascript-a-compiled-or-interpreted-language) |
 | 40 | [Delete Operator](#delete-operator) |
 | 41 | [Memory Management in JS (Heap vs Stack)](#memory-management-in-js-heap-vs-stack) |
+| 42 | [What is Nature of Promises and Async Awaits?](#what-is-nature-of-promises-and-async-awaits) |
+
 ---
 
 1. ### What is JavaScript?
@@ -876,6 +878,7 @@ console.log('Global 2!');
 
 24. #### What are arrow functions vs normal functions
 
+    
 1. Syntax 
 ```javascript
 // Normal Function
@@ -2036,6 +2039,106 @@ console.log(obj2.value); // 20 (both obj1 and obj2 reference the same object) + 
 ```
 
 ![image](https://github.com/user-attachments/assets/93e77726-b29d-4101-87a9-c8ce0415277d)
+
+**[⬆ Back to Top](#table-of-contents)**
+
+---
+
+42. #### What is Nature of Promises and Async Awaits?
+
+#### Nature of `resolve` and `then` in JavaScript
+
+1. **`resolve` is synchronous**:
+   - The `resolve` function immediately sets the promise's state to **fulfilled**.
+   - The `.then` callback runs **asynchronously** after the current synchronous code finishes.
+
+2. **`then` and `catch` callbacks**:
+   - These callbacks are always executed asynchronously, even if the promise is resolved or rejected immediately. The `.then` is only called once the promise is resolved.
+
+
+**Immediate `resolve`:**
+```javascript
+const promise = new Promise((resolve, reject) => {
+  console.log("Executor starts");
+  resolve("Resolved value"); // Synchronously changes promise state
+  console.log("Executor ends");
+});
+
+promise.then((value) => {
+  console.log("Then:", value); // Executes asynchronously
+});
+
+console.log("After promise creation");
+```
+
+**Asynchronous resolve**
+```javascript
+const promise = new Promise((resolve, reject) => {
+  console.log("Executor starts");
+  setTimeout(() => {
+    resolve("Resolved after 1 second");
+  }, 1000);
+  console.log("Executor ends");
+});
+
+promise.then((value) => {
+  console.log("Then:", value); // Executes asynchronously after 1 second
+});
+
+console.log("After promise creation");
+```
+
+- **resolve and reject are synchronous**:
+  - These functions immediately change the promise's state when called.
+
+- **.then and .catch are asynchronous**:
+  - These callbacks always execute after the current synchronous code, even if the promise resolves or rejects immediately.
+
+
+#### Nature of async, await, and Return Values in JavaScript
+
+1. **await and the Microtask Queue**
+
+Even when the `await` keyword is used within an `async` function, it pauses the function execution and schedules the continuation in the microtask queue. This ensures that all currently executing synchronous code completes before the next step of the async function resumes.
+
+
+```javascript
+async function example() {
+  console.log("Start");
+  await Promise.resolve(); // Adds the next step to the microtask queue
+  console.log("End");
+}
+
+console.log("Before calling example");
+example();
+console.log("After calling example");
+```
+
+2. Functions and Default Return Values
+
+If a function does not explicitly return a value, it implicitly returns `undefined`.
+
+### Example Code:
+
+```javascript
+function noReturn() {
+  console.log("This function has no return value");
+}
+
+const result = noReturn();
+console.log(result); // Output: undefined
+```
+
+
+
+
+| Concept                                                      | Explanation                                                                                   |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `resolve` and `reject`                                        | Synchronous functions that immediately set the promise's state.                               |
+| `.then` and `.catch`                                           | Asynchronous callbacks that execute after the current synchronous code.                        |
+| `await`                                                        | Pauses an async function and schedules its continuation in the microtask queue, ensuring synchronous code runs first. |
+| Functions without an explicit return value                    | Implicitly return `undefined`.                                                                  |
+
 
 **[⬆ Back to Top](#table-of-contents)**
 
